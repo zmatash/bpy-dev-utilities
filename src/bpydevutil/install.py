@@ -81,3 +81,12 @@ class InstallAddonsFromSource:
                 path.unlink()
             else:
                 shutil.rmtree(path)
+
+    def install_addons(self, addons: list[Path]) -> None:
+
+        for path in addons:
+            if path.is_file():
+                shutil.copyfile(path, Path(self.addons_install_dir / path.name))
+            else:
+                shutil.copytree(path, Path(self.addons_install_dir / path.name))
+
