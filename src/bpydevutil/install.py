@@ -83,6 +83,12 @@ class InstallAddonsFromSource:
                 shutil.rmtree(path)
 
     def install_addons(self, addons: list[Path]) -> None:
+        """Install addon sources to the addon directory.
+
+        Args:
+            addons: List of addon source paths.
+
+        """
 
         for path in addons:
             if path.is_file():
