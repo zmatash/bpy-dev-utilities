@@ -11,19 +11,16 @@ class InstallAddonsFromSource:
         self,
         addons_src: Path,
         addons_install_dir: Path,
-        print_info: bool = True,
         excluded_addons: Optional[list[str]] = None,
     ):
         """
         Args:
             addons_src: Directory where addon sources are located.
             addons_install_dir: Directory to install addons to.
-            print_info: Print information to terminal.
             excluded_addons: Names of addons in the source directory not to install. (Include file extensions)
         """
         self.addons_src = addons_src
         self.addons_install_dir = addons_install_dir
-        self.print_info = print_info
         self.excluded_addons = excluded_addons
 
     def get_addon_srcs(self) -> list[Path]:
@@ -95,4 +92,3 @@ class InstallAddonsFromSource:
                 shutil.copyfile(path, Path(self.addons_install_dir / path.name))
             else:
                 shutil.copytree(path, Path(self.addons_install_dir / path.name))
-
