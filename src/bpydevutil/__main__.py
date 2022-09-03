@@ -70,7 +70,7 @@ def install(
             raise typer.BadParameter(f"<{param}> cannot be empty.")
 
         if not Path(directory_params[param]).is_dir():
-            raise typer.BadParameter(f"<{param}> <{directory_params[param]}> is not a valid directory.")
+            raise typer.BadParameter(f"<{param}> <{directory_params[param]}> is not an existing directory.")
 
     install_tool = InstallAddonsFromSource(Path(src_dir), Path(blender_addons_dir), excluded_addons)
 
