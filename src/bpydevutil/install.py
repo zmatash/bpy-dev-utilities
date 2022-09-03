@@ -11,7 +11,7 @@ from rich.progress import track
 
 
 def render_settings(addons_src, addons_install_dir, excluded_addons):
-    src_string = f"Addon Sources = {addons_src}"
+    src_string = f"Addon Sources Directory = {addons_src}"
     addons_install_string = f"Addon Install Directory = {addons_install_dir}"
     excluded_addons_string = f"Excluded Addons = {excluded_addons}"
 
@@ -20,16 +20,17 @@ def render_settings(addons_src, addons_install_dir, excluded_addons):
 
 class InstallAddonsFromSource:
     def __init__(
-        self,
-        addons_src: Path,
-        addons_install_dir: Path,
-        excluded_addons: Optional[list[str]] = None,
+            self,
+            addons_src: Path,
+            addons_install_dir: Path,
+            excluded_addons: Optional[list[str]] = None,
     ):
         """
         Args:
             addons_src: Directory where addon sources are located.
             addons_install_dir: Directory to install addons to.
             excluded_addons: Names of addons in the source directory not to install. (Include file extensions)
+
         """
         self.addons_src = addons_src
         self.addons_install_dir = addons_install_dir
@@ -89,7 +90,6 @@ class InstallAddonsFromSource:
 
         Args:
             addon_names: List of addon names to delete.
-
 
         """
 
