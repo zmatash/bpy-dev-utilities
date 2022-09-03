@@ -78,8 +78,6 @@ def install(
     install_tool.clear_old_addons([path.name for path in addon_srcs])
     install_tool.install_addons(addon_srcs)
 
-    print(excluded_addons)
-
 
 if __name__ == "__main__":
     app()
