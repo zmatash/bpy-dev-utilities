@@ -98,14 +98,13 @@ class InstallAddonsFromSource:
         ]
 
         if not delete_paths:
-            return
+            raise typer.Abort()
 
-        for _ in track(delete_paths, show_speed=False, description="Removing old versions..."):
-            for path in delete_paths:
-                if path.is_file():
-                    path.unlink()
-                else:
-                    shutil.rmtree(path)
+        for path in track(delete_paths, description="Removing old versions..."):
+            if path.is_file():
+                path.unlink()
+            else:
+                shutil.rmtree(path)
 
     def install_addons(self, addons: list[Path]) -> None:
         """Install addon sources to the addon directory.
@@ -115,11 +114,10 @@ class InstallAddonsFromSource:
 
         """
 
-        for _ in track(addons, description="Installing addons..."):
-            for path in addons:
-                if path.is_file():
-                    shutil.copyfile(path, Path(self.addons_install_dir / path.name))
-                else:
-                    shutil.copytree(path, Path(self.addons_install_dir / path.name))
+        for path in track(addons, description="Installing addons..."):
+            if path.is_file():
+                shutil.copyfile(path, Path(self.addons_install_dir / path.name))
+            else:
+                shutil.copytree(path, Path(self.addons_install_dir / path.name))
 
         print("[green]Done![/green]")
