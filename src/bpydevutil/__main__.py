@@ -5,6 +5,7 @@ import iniconfig
 import typer
 from iniconfig import IniConfig
 
+from common import get_addon_srcs
 from install import InstallAddonsFromSource
 
 app = typer.Typer()
@@ -74,7 +75,7 @@ def install(
 
     install_tool = InstallAddonsFromSource(Path(src_dir), Path(blender_addons_dir), excluded_addons)
 
-    addon_srcs = install_tool.get_addon_srcs()
+    addon_srcs = get_addon_srcs(install_tool.excluded_addons, install_tool.addons_src)
     install_tool.clear_old_addons([path.name for path in addon_srcs])
     install_tool.install_addons(addon_srcs)
 
