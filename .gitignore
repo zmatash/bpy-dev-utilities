@@ -140,7 +140,6 @@ cython_debug/
 
 # PyCharm
 .idea/
-pytest.ini
 
 # pyproject.toml
 pyproject.toml
