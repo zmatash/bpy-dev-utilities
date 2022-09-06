@@ -3,4 +3,46 @@
 
 This is a personal collection of simple CLI utilities that I made to help my development of Blender addons.
 
+### Installation
+```shell
+pip install bpydevutil
+```
 
+## Install Tool
+```sh
+bpydevutil install <src_dir> <blender_addons_dir>
+```
+#### Arguments:
+- src_dir: Directory where addon sources are located. eg ```MyProject\src```
+- blender_addons_dir: Blender addon installation directory. eg ```\Blender\3.2\scripts\addons```
+
+#### Options:
+- --excluded-addons: Addon names to be excluded from installation. eg ```Addon1, Addon2```
+- --remove-suffixes: File types to be deleted before installation. eg ```.pyc, .txt```
+- --help: Show help.
+
+## Packing Tool
+
+```sh
+bpydevutil pack <src_dir> <blender_addons_dir>
+```
+#### Arguments:
+- src_dir: Directory where addon sources are located. eg ```MyProject\src```
+- release_dir: Directory where archive should be built. eg ```MyProject\releases```
+
+#### Options:
+- --excluded-addons: Addon names to be excluded from packing. eg ```Addon1, Addon2```
+- --remove-suffixes: File types to be deleted before packing. eg ```.pyc, .txt```
+- --help: Show help.
+
+## Config File
+
+All arguments and options can be specified in a ```bpydevutil.ini``` file, the script looks for this file in the current working directory.
+
+```ini
+[bpydevutil]
+blender_addons_dir = \Blender\3.2\scripts\addons
+src_dir = \blender-addons\my-addon\src
+release_dir = \blender-addons\my-addon\releases
+remove_suffixes = .pyc, .txt
+```
