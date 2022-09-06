@@ -35,6 +35,10 @@ def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> None:
 def get_addon_srcs(addons_src: Path, excluded_addons: Optional[list[str]] = None) -> list[Path]:
     """Get a list of addon source paths that need to be installed.
 
+    Args:
+        addons_src: Path of the directory where addon sources are located.
+        excluded_addons: List of names of addons to be excluded from process.
+
     Returns:
         The paths of the addons to be installed.
 

@@ -24,7 +24,7 @@ class InstallAddonsFromSource:
         addons_src: Path,
         addons_install_dir: Path,
         excluded_addons: Optional[list[str]] = None,
-    ):
+    ) -> None:
         """
         Args:
             addons_src: Directory where addon sources are located.
