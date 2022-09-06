@@ -7,7 +7,7 @@ import pytest
 import bpydevutil.install as install
 
 
-@pytest.mark.order(1)
+@pytest.mark.order(2)
 class TestInstallClass:
 
     def test_clear_old_addons(self, fake_addon_dev_env, fake_addon_install_env):

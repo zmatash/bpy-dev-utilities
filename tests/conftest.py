@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 
 
-def create_fake_module(root_path: Path, module_name: str, write: bool) -> None:
-    module = Path(root_path / f"{module_name}.py")
+def create_fake_module(root_path: Path, module_name: str, write: bool, extension: str = ".py") -> None:
+    module = Path(root_path / f"{module_name}{extension}")
 
     if write:
         module.write_text('bl_info = {"name": "Fake Addon File", "version": (0, 5, 0), "blender": (2, 93, 0)}')
@@ -12,7 +12,7 @@ def create_fake_module(root_path: Path, module_name: str, write: bool) -> None:
         module.touch()
 
 
-def create_fake_package(root_path: Path, package_name: str, write: bool) -> None:
+def create_fake_package(root_path: Path, package_name: str, write: bool) -> Path:
 
     package = Path(root_path / package_name)
     package.mkdir()
@@ -27,8 +27,10 @@ def create_fake_package(root_path: Path, package_name: str, write: bool) -> None
     else:
         init.touch()
 
+    return package
 
-@pytest.fixture(scope="module")
+
+@pytest.fixture(scope="session")
 def fake_addon_install_env(tmp_path_factory) -> Path:
     addons_dir = tmp_path_factory.mktemp("addons_dir")
     create_fake_module(addons_dir, "example_addon", False)
@@ -38,14 +40,43 @@ def fake_addon_install_env(tmp_path_factory) -> Path:
     return addons_dir
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def fake_addon_dev_env(tmp_path_factory) -> tuple[Path, Path]:
     root = tmp_path_factory.mktemp("project_root")
     src_dir = root / "src"
     src_dir.mkdir()
 
     create_fake_module(src_dir, "fake_addon_module", True)
-    create_fake_package(src_dir, "fake_addon_package", True)
+
+    path = create_fake_package(src_dir, "fake_addon_package", True)
+    create_fake_package(path, "__pycache__", False)
+    create_fake_module(path, "dummy_file", False, ".dummy")
+
     create_fake_package(src_dir, "fake_addon_package_no_write", False)
 
     return root, src_dir
+
+
+def config_strings():
+    """Formatting the strings to write the test ini file.
+
+    Returns:
+        Formatting string to write to the config file.
+
+    """
+
+    header = "[bpydevutil]"
+    src_dir = f"src_dir = ExamplePath"
+    blender_addons_dir = f"blender_addons_dir = ExamplePath2"
+    excluded_addons = f"excluded_addons = addon1, addon2,addon3"
+
+    return f"{header}\n{src_dir}\n{blender_addons_dir}\n{excluded_addons}"
+
+
+@pytest.fixture(scope="session")
+def example_config(tmp_path_factory):
+    ini_dir = tmp_path_factory.mktemp("test_config_root")
+    ini_file = Path(ini_dir / "bpydevutil.ini")
+    ini_file.write_text(config_strings())
+
+    return ini_dir, ini_file
