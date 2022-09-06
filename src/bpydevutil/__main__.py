@@ -75,6 +75,10 @@ def install(
         default=parse_cfg_list(get_cfg_arg(ini_config, "excluded_addons")),
         help="Addon names to be excluded from installion, separate names with commas.",
     ),
+    remove_suffixes: Optional[list[str]] = typer.Option(
+        default=parse_cfg_list(get_cfg_arg(ini_config, "remove_suffixes")),
+        help="Remove files with these suffixes from the addon source before running the operation.",
+    ),
 ) -> None:
     """
     Directly install addon sources to Blender, clearing old versions beforehand.
@@ -89,7 +93,7 @@ def install(
     addon_srcs = common.get_addon_srcs(install_tool.addons_src, install_tool.excluded_addons)
     install_tool.clear_old_addons([path.name for path in addon_srcs])
     for addon in addon_srcs:
-        common.clear_unused_files(addon)
+        common.clear_unused_files(addon, remove_suffixes)
     install_tool.install_addons(addon_srcs)
 
 
@@ -105,7 +109,14 @@ def pack(
         default=parse_cfg_list(get_cfg_arg(ini_config, "excluded_addons")),
         help="Addon names to be excluded from installion, separate names with commas.",
     ),
+    remove_suffixes: Optional[list[str]] = typer.Option(
+        default=parse_cfg_list(get_cfg_arg(ini_config, "remove_suffixes")),
+        help="Remove files with these suffixes from the addon source before running the operation.",
+    ),
 ):
+    """
+    Pack addons sources into ZIP files, autogenerating the name from extracted bl_info data.
+    """
     directory_params = {"src_dir": src_dir, "release_dir": release_dir}
 
     check_directories(directory_params)
