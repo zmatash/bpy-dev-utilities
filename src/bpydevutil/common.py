@@ -1,11 +1,38 @@
 """Common functions used by multiple tools."""
+import shutil
 from pathlib import Path
+from typing import Optional
 
 import typer
 from rich import print
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 
-def get_addon_srcs(excluded_addons, addons_src) -> list[Path]:
+def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> None:
+    """Garbage cleaning source files. eg .pyc files.
+
+    Args:
+        addon: Addon path to garbage clean.
+        rm_suffixes: Delete files using these suffixes.
+    """
+    if rm_suffixes is None:
+        rm_suffixes = {".pyc"}
+
+    file_count = 0
+    with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
+        progress.add_task(description=f"Garbage cleaning...")
+        for path in addon.rglob("*"):
+            if path.is_dir() and path.name == "__pycache__":
+                shutil.rmtree(path)
+                file_count += 1
+            elif path.suffix in rm_suffixes:
+                path.unlink()
+                file_count += 1
+
+    print(f"[green]Garbage Cleaning:[/green] {file_count} files removed.")
+
+
+def get_addon_srcs(addons_src: Path, excluded_addons: Optional[list[str]] = None) -> list[Path]:
     """Get a list of addon source paths that need to be installed.
 
     Returns:
