@@ -45,7 +45,7 @@ class InstallAddonsFromSource:
         )
 
     def clear_old_addons(self, addon_names: list[str]) -> None:
-        """Clear old addon version from the installion directory.
+        """Clear old addon version from the installation directory.
 
         Args:
             addon_names: List of addon names to delete.
