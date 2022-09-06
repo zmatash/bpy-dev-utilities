@@ -69,11 +69,11 @@ def install(
         default=get_cfg_arg(ini_config, "src_dir"), help="Directory where addon sources are located."
     ),
     blender_addons_dir: str = typer.Argument(
-        default=get_cfg_arg(ini_config, "blender_addons_dir"), help="Blender addon installion directory."
+        default=get_cfg_arg(ini_config, "blender_addons_dir"), help="Blender addon installation directory."
     ),
     excluded_addons: Optional[list[str]] = typer.Option(
         default=parse_cfg_list(get_cfg_arg(ini_config, "excluded_addons")),
-        help="Addon names to be excluded from installion, separate names with commas.",
+        help="Addon names to be excluded from installation, separate names with commas.",
     ),
     remove_suffixes: Optional[list[str]] = typer.Option(
         default=parse_cfg_list(get_cfg_arg(ini_config, "remove_suffixes")),
@@ -107,7 +107,7 @@ def pack(
     ),
     excluded_addons: Optional[list[str]] = typer.Option(
         default=parse_cfg_list(get_cfg_arg(ini_config, "excluded_addons")),
-        help="Addon names to be excluded from installion, separate names with commas.",
+        help="Addon names to be excluded from installation, separate names with commas.",
     ),
     remove_suffixes: Optional[list[str]] = typer.Option(
         default=parse_cfg_list(get_cfg_arg(ini_config, "remove_suffixes")),
