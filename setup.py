@@ -4,7 +4,7 @@ setup(
     name="bpydevutil",
     version="1.0",
     packages=["bpydevutil"],
-    package_dir={"": "src"},
+    package_dir={"": "./src"},
     url="https://github.com/zmatash/bpy-dev-utilities",
     license="",
     author="Matt Ashpole",
