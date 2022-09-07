@@ -129,7 +129,3 @@ def pack(
         name = packing_tool.generate_zip_name(bl_info)
         common.clear_unused_files(addon, remove_suffixes)
         packing_tool.pack_addon(addon, name)
-
-
-"""if __name__ == "__main__":
-    app()"""

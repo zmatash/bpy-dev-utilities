@@ -3,7 +3,7 @@
 import iniconfig
 import pytest
 
-import bpydevutil.__main__ as main
+import bpydevutil.main as main
 
 
 @pytest.mark.order(5)
