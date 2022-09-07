@@ -5,9 +5,9 @@ import iniconfig
 import typer
 from iniconfig import IniConfig
 
-import common
-from install import InstallAddonsFromSource
-from pack import PackAddonsFromSource
+from . import common
+from .install import InstallAddonsFromSource
+from .pack import PackAddonsFromSource
 
 app = typer.Typer()
 
@@ -131,5 +131,5 @@ def pack(
         packing_tool.pack_addon(addon, name)
 
 
-if __name__ == "__main__":
-    app()
+"""if __name__ == "__main__":
+    app()"""
