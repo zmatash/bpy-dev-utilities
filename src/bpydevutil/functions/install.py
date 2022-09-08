@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
-import typer
 from rich import print
 from rich.panel import Panel
 from rich.progress import track
@@ -57,7 +56,7 @@ class InstallAddonsFromSource:
         ]
 
         if not delete_paths:
-            raise typer.Abort()
+            return
 
         for path in track(delete_paths, description="Removing old versions..."):
             if path.is_file():
