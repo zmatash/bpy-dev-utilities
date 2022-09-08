@@ -7,6 +7,10 @@ This is a personal collection of simple CLI utilities that I made to help my dev
 ```shell
 pip install bpydevutil
 ```
+#### OR
+```shell
+poetry add bpydevutil
+```
 
 ## Install Tool
 ```sh
