@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-import bpydevutil.common as common
-import bpydevutil.pack as pack
+import bpydevutil.functions.common as common
+import bpydevutil.functions.pack as pack
 
 
 @pytest.mark.order(3)
