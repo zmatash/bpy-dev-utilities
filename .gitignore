@@ -141,9 +141,6 @@ cython_debug/
 # PyCharm
 .idea/
 
-# pyproject.toml
-pyproject.toml
-
 # Blender
 *.blend1
 copy_paste.txt
