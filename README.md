@@ -41,12 +41,12 @@ bpydevutil pack <src_dir> <blender_addons_dir>
 
 ## Config File
 
-All arguments and options can be specified in a ```bpydevutil.ini``` file, the script looks for this file in the current working directory.
+All arguments and options can be specified in a ```pyproject.toml``` file, the script looks for this file in the current working directory.
 
-```ini
-[bpydevutil]
-blender_addons_dir = \Blender\3.2\scripts\addons
-src_dir = \blender-addons\my-addon\src
-release_dir = \blender-addons\my-addon\releases
-remove_suffixes = .pyc, .txt
+```toml
+[tool.bpydevutil]
+blender_addons_dir = "Blender\\3.2\\scripts\\addons"
+src_dir = "blender-addons\\my-addon\\src"
+release_dir = "blender-addons\\my-addon\\release"
+remove-suffixes = [".pyc", ".txt"]
 ```
