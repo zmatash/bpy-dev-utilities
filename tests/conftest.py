@@ -65,18 +65,17 @@ def config_strings():
 
     """
 
-    header = "[bpydevutil]"
-    src_dir = f"src_dir = ExamplePath"
-    blender_addons_dir = f"blender_addons_dir = ExamplePath2"
-    excluded_addons = f"excluded_addons = addon1, addon2,addon3"
+    header = "[tool.bpydevutil]"
+    src_dir = f'src_dir = "ExamplePath"'
+    excluded_addons = f'excluded-addons = ["addon1", "addon2", "addon3"]'
 
-    return f"{header}\n{src_dir}\n{blender_addons_dir}\n{excluded_addons}"
+    return f"{header}\n{src_dir}\n{excluded_addons}"
 
 
 @pytest.fixture(scope="session")
 def example_config(tmp_path_factory):
-    ini_dir = tmp_path_factory.mktemp("test_config_root")
-    ini_file = Path(ini_dir / "bpydevutil.ini")
-    ini_file.write_text(config_strings())
+    config_dir = tmp_path_factory.mktemp("test_config_root")
+    config = Path(config_dir / "pryproject.toml")
+    config.write_text(config_strings())
 
-    return ini_dir, ini_file
+    return config_dir, config
