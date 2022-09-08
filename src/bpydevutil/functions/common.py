@@ -1,4 +1,4 @@
-"""Common functions used by multiple tools."""
+"""Common functions used by multiple functions."""
 import shutil
 from pathlib import Path
 from typing import Optional

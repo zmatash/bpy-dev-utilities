@@ -1,51 +1,14 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional
 
-import iniconfig
+import tomli
 import typer
-from iniconfig import IniConfig
 
-from . import common
-from .install import InstallAddonsFromSource
-from .pack import PackAddonsFromSource
+from bpydevutil.functions import common
+from bpydevutil.functions.install import InstallAddonsFromSource
+from bpydevutil.functions.pack import PackAddonsFromSource
 
 app = typer.Typer()
-
-cwd = Path.cwd()
-config = Path(cwd / "bpydevutil.ini")
-
-if config.is_file():
-    ini_config = iniconfig.IniConfig(str(config))
-else:
-    ini_config = None
-
-
-def get_cfg_arg(cfg: IniConfig, param: str):
-    if not cfg:
-        return None
-
-    try:
-        return cfg["bpydevutil"][param]
-    except KeyError:
-        return None
-
-
-def parse_cfg_list(value: str) -> Union[list[str], None]:
-    """Split a string into a list.
-
-    Args:
-        value: The string to split by commas.
-
-    Returns:
-        The list of strings.
-
-    """
-
-    if not value:
-        return None
-
-    value = value.replace(", ", ",")
-    return value.split(",")
 
 
 def check_directories(directory_params: dict[str, str]) -> None:
@@ -63,20 +26,37 @@ def check_directories(directory_params: dict[str, str]) -> None:
             raise typer.BadParameter(f"<{param}> <{directory_params[param]}> is not an existing directory.")
 
 
+def parse_toml(toml: Path, param_key: str) -> Any:
+    with open(toml, "rb") as f:
+        toml_dict = tomli.load(f)
+        try:
+            return toml_dict["tool"]["bpydevutil"][param_key]
+        except KeyError:
+            return None
+
+
+def get_toml():
+    pyproject = Path.cwd() / "pyproject.toml"
+    if pyproject.exists():
+        return pyproject
+    else:
+        return None
+
+
 @app.command()
 def install(
     src_dir: str = typer.Argument(
-        default=get_cfg_arg(ini_config, "src_dir"), help="Directory where addon sources are located."
+        default=parse_toml(get_toml(), "src_dir"), help="Directory where addon sources are located."
     ),
     blender_addons_dir: str = typer.Argument(
-        default=get_cfg_arg(ini_config, "blender_addons_dir"), help="Blender addon installation directory."
+        default=parse_toml(get_toml(), "blender_addons_dir"), help="Blender addon installation directory."
     ),
     excluded_addons: Optional[list[str]] = typer.Option(
-        default=parse_cfg_list(get_cfg_arg(ini_config, "excluded_addons")),
+        default=parse_toml(get_toml(), "excluded-addons"),
         help="Addon names to be excluded from installation, separate names with commas.",
     ),
     remove_suffixes: Optional[list[str]] = typer.Option(
-        default=parse_cfg_list(get_cfg_arg(ini_config, "remove_suffixes")),
+        default=parse_toml(get_toml(), "remove-suffixes"),
         help="Remove files with these suffixes from the addon source before running the operation.",
     ),
 ) -> None:
@@ -100,17 +80,17 @@ def install(
 @app.command()
 def pack(
     src_dir: str = typer.Argument(
-        default=get_cfg_arg(ini_config, "src_dir"), help="Directory where addon sources are located."
+        default=parse_toml(get_toml(), "src_dir"), help="Directory where addon sources are located."
     ),
     release_dir: str = typer.Argument(
-        default=get_cfg_arg(ini_config, "release_dir"), help="Directory where addons should be moved after packing."
+        default=parse_toml(get_toml(), "release_dir"), help="Directory where addons should be moved after packing."
     ),
     excluded_addons: Optional[list[str]] = typer.Option(
-        default=parse_cfg_list(get_cfg_arg(ini_config, "excluded_addons")),
+        default=parse_toml(get_toml(), "exluded-addons"),
         help="Addon names to be excluded from installation, separate names with commas.",
     ),
     remove_suffixes: Optional[list[str]] = typer.Option(
-        default=parse_cfg_list(get_cfg_arg(ini_config, "remove_suffixes")),
+        default=parse_toml(get_toml(), "remove-suffixes"),
         help="Remove files with these suffixes from the addon source before running the operation.",
     ),
 ):
