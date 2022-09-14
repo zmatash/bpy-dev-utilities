@@ -5,7 +5,7 @@ import pytest
 import bpydevutil.main as main
 
 
-@pytest.mark.order(5)
+@pytest.mark.order(4)
 class TestConfigParsing:
     def test_get_cfg_arg(self, example_config):
         _, config_path = example_config
