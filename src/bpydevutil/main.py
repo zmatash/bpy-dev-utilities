@@ -128,26 +128,57 @@ def install(
         default=parse_toml(get_toml(), "excluded-addons"),
         help="Addon names to be excluded from installation, separate names with commas.",
     ),
-    remove_suffixes: Optional[list[str]] = typer.Option(
-        default=parse_toml(get_toml(), "remove-suffixes"),
-        help="Remove files with these suffixes from the addon source before running the operation.",
+    blender_exe: Optional[str] = typer.Option(
+        default=parse_toml(get_toml(), "blender-exe"), help="Path to blender.exe."
+    ),
+    reload_blender: Optional[bool] = typer.Option(
+        default=parse_toml(get_toml(), "reload-blender"), help="Restart Blender and enable addons."
     ),
 ) -> None:
     """
     Directly install addon sources to Blender, clearing old versions beforehand.
     """
 
+    def renderable(addons_src, addons_install_dir, excluded_addon_names, blender_exe_path, load_blender):
+        src_string = f"Addon Sources Directory = {addons_src}"
+        addons_install_string = f"Addon Install Directory = {addons_install_dir}"
+        excluded_addons_string = f"Excluded Addons = {excluded_addon_names}"
+        blender_exe_string = f"Blender Executable = {blender_exe_path}"
+        reload_blender_string = f"Reload Blender = {load_blender}"
+
+        return "\n".join(
+            [src_string, addons_install_string, excluded_addons_string, blender_exe_string, reload_blender_string]
+        )
+
+    print(
+        Panel.fit(
+            renderable(src_dir, blender_addons_dir, excluded_addons, blender_exe, reload_blender),
+            title="[orange3]Installer Settings[/orange3]",
+            border_style="yellow",
+        )
+    )
+
     directory_params = {"src_dir": src_dir, "blender_addons_dir": blender_addons_dir}
 
     check_directories(directory_params)
 
-    install_tool = InstallAddonsFromSource(Path(src_dir), Path(blender_addons_dir), excluded_addons)
+    install_tool = InstallAddonsFromSource(Path(blender_addons_dir))
+    addon_srcs = common.get_addon_srcs(Path(src_dir), excluded_addons)
 
-    addon_srcs = common.get_addon_srcs(install_tool.addons_src, install_tool.excluded_addons)
-    install_tool.clear_old_addons([path.name for path in addon_srcs])
-    for addon in addon_srcs:
-        common.clear_unused_files(addon, remove_suffixes)
-    install_tool.install_addons(addon_srcs)
+    for addon in track(addon_srcs, description="Removing existing files..."):
+        common.clear_old_addon(Path(blender_addons_dir), addon.name)
+
+    for addon in track(addon_srcs, description="Installing addons..."):
+        install_tool.install_addon(addon)
+
+    if reload_blender:
+        if not blender_exe:
+            print("[red]<reload-blender> option is enabled, <blender-exe> path should also be supplied.[/red]")
+            print("[dark_orange]Done! Blender will not be loaded.[/dark_orange]")
+            return
+        common.load_blender(blender_exe, [path.stem for path in addon_srcs])
+
+    print("[green]Done![/green]")
 
 
 @app.command()
@@ -160,7 +191,7 @@ def pack(
     ),
     excluded_addons: Optional[list[str]] = typer.Option(
         default=parse_toml(get_toml(), "exluded-addons"),
-        help="Addon names to be excluded from installation, separate names with commas.",
+        help="Addon names to be excluded from packing, separate names with commas.",
     ),
     remove_suffixes: Optional[list[str]] = typer.Option(
         default=parse_toml(get_toml(), "remove-suffixes"),
@@ -170,15 +201,34 @@ def pack(
     """
     Pack addons sources into ZIP files, autogenerating the name from extracted bl_info data.
     """
+
+    def renderable(addons_src, excluded_addon_names):
+        src_string = f"Addon Sources Directory = {addons_src}"
+        excluded_addons_string = f"Excluded Addons = {excluded_addon_names}"
+
+        return "\n".join([src_string, excluded_addons_string])
+
+    print(
+        Panel.fit(
+            renderable(src_dir, excluded_addons),
+            title="[orange3]Packer Settings[/orange3]",
+            border_style="yellow",
+        )
+    )
+
     directory_params = {"src_dir": src_dir, "release_dir": release_dir}
 
     check_directories(directory_params)
 
-    packing_tool = PackAddonsFromSource(Path(src_dir), Path(release_dir), excluded_addons)
-    addon_srcs = common.get_addon_srcs(packing_tool.addons_src, packing_tool.excluded_addons)
+    packing_tool = PackAddonsFromSource(Path(release_dir))
+    addon_srcs = common.get_addon_srcs(addons_src, excluded_addons)
 
-    for addon in addon_srcs:
-        bl_info = packing_tool.get_addon_data(addon)
-        name = packing_tool.generate_zip_name(bl_info)
-        common.clear_unused_files(addon, remove_suffixes)
-        packing_tool.pack_addon(addon, name)
+    with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
+        progress.add_task(description=f"Writing to archive...")
+        for addon in addon_srcs:
+            bl_info = packing_tool.get_addon_data(addon)
+            name = packing_tool.generate_zip_name(bl_info)
+            common.clear_unused_files(addon, remove_suffixes)
+            packing_tool.pack_addon(addon, name, Path(src_dir))
+
+    print("[green]Done![/green]")
