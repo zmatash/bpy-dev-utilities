@@ -5,16 +5,16 @@ This is a personal collection of simple CLI utilities that I made to help my dev
 
 ### Installation
 ```shell
-pip install bpydevutil
+pip install bpy-dev-utils
 ```
 #### OR
 ```shell
-poetry add bpydevutil
+poetry add bpy-dev-utils
 ```
 
 ## Install Tool
 ```sh
-bpydevutil install <src_dir> <blender_addons_dir>
+bpy install <src_dir> <blender_addons_dir>
 ```
 Installs addons directly from their source files into the specified Blender addons installation directory.
 #### Arguments:
@@ -22,14 +22,28 @@ Installs addons directly from their source files into the specified Blender addo
 - blender_addons_dir: Blender addon installation directory. eg ```\Blender\3.2\scripts\addons```
 
 #### Options:
-- --excluded-addons: Addon names to be excluded from installation. eg ```Addon1, Addon2```
-- --remove-suffixes: File types to be deleted before installation. eg ```.pyc, .txt```
+- --excluded-addons: Addon names to be excluded from installation. eg ```["Addon1", "Addon2"]```
+- --remove-suffixes: File types to be deleted before installation. eg ```[".pyc", ".txt"]```
+- --help: Show help.
+
+## Symlink Tool
+```sh
+bpy symlink <src_dir> <blender_addons_dir>
+```
+Creates symlinks to the addon source in the specified Blender addons installation directory.
+#### Arguments:
+- src_dir: Directory where addon sources are located. eg ```MyProject\src```
+- blender_addons_dir: Blender addon installation directory. eg ```\Blender\3.2\scripts\addons```
+
+#### Options:
+- --excluded-addons: Addon names to be excluded from symlink creation. eg ```["Addon1", "Addon2"]```
+- --remove-suffixes: File types to be deleted before symlink creation. eg ```[".pyc", ".txt"]```
 - --help: Show help.
 
 ## Packing Tool
 
 ```sh
-bpydevutil pack <src_dir> <blender_addons_dir>
+bpy pack <src_dir> <blender_addons_dir>
 ```
 Packs addons into ZIP files and automatically names them based on data extracted from the addon bl_info dictionary.<br>
 Example resulting name: `My Addon (v1.0.0).zip`

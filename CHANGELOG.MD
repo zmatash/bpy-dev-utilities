@@ -11,3 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Application incorrectly aborting if clearing old files is unnecessary. 
+
+## [0.3.0] - 09-12-22
+### Added
+- Symlink tool to create symlinks to addon source from the installation directory.
