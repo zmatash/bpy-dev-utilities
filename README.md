@@ -30,7 +30,7 @@ Installs addons directly from their source files into the specified Blender addo
 ```sh
 bpy symlink <src_dir> <blender_addons_dir>
 ```
-Creates symlinks to the addon source in the specified Blender addons installation directory.
+Creates symlinks to the addon source in the specified Blender addons installation directory. Requires either symlink creation privileges, either through running as admin or security policy.
 #### Arguments:
 - src_dir: Directory where addon sources are located. eg ```MyProject\src```
 - blender_addons_dir: Blender addon installation directory. eg ```\Blender\3.2\scripts\addons```
