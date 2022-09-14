@@ -24,6 +24,8 @@ Installs addons directly from their source files into the specified Blender addo
 #### Options:
 - --excluded-addons: Addon names to be excluded from installation. eg ```["Addon1", "Addon2"]```
 - --remove-suffixes: File types to be deleted before installation. eg ```[".pyc", ".txt"]```
+- --blender-exe: Path to blender exe. eg ```\Blender\blender.exe```
+- --reload-blender: Load blender and enable addons, requires --blender-exe to be set. eg ```True```
 - --help: Show help.
 
 ## Symlink Tool
@@ -38,6 +40,8 @@ Creates symlinks to the addon source in the specified Blender addons installatio
 #### Options:
 - --excluded-addons: Addon names to be excluded from symlink creation. eg ```["Addon1", "Addon2"]```
 - --remove-suffixes: File types to be deleted before symlink creation. eg ```[".pyc", ".txt"]```
+- --blender-exe: Path to blender exe. eg ```\Blender\blender.exe```
+- --reload-blender: Load blender and enable addons, requires --blender-exe to be set. eg ```True```
 - --help: Show help.
 
 ## Packing Tool
@@ -66,4 +70,6 @@ blender_addons_dir = "Blender\\3.2\\scripts\\addons"
 src_dir = "blender-addons\\my-addon\\src"
 release_dir = "blender-addons\\my-addon\\release"
 remove-suffixes = [".pyc", ".txt"]
+blender-exe = "Blender\\blender.exe"
+reload-blender = true
 ```
