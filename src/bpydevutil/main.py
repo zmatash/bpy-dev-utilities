@@ -3,10 +3,14 @@ from typing import Any, Optional
 
 import tomli
 import typer
+from rich import print
+from rich.panel import Panel
+from rich.progress import track
 
 from bpydevutil.functions import common
 from bpydevutil.functions.install import InstallAddonsFromSource
 from bpydevutil.functions.pack import PackAddonsFromSource
+from bpydevutil.functions.symlink import SymlinkToAddonSource
 
 app = typer.Typer()
 
@@ -41,6 +45,75 @@ def get_toml():
         return pyproject
     else:
         return None
+
+
+@app.command()
+def symlink(
+    src_dir: str = typer.Argument(
+        default=parse_toml(get_toml(), "src_dir"), help="Directory where addon sources are located."
+    ),
+    blender_addons_dir: str = typer.Argument(
+        default=parse_toml(get_toml(), "blender_addons_dir"), help="Blender addon installation directory."
+    ),
+    excluded_addons: Optional[list[str]] = typer.Option(
+        default=parse_toml(get_toml(), "excluded-addons"), help="Names of addons to ignore."
+    ),
+    blender_exe: Optional[str] = typer.Option(
+        default=parse_toml(get_toml(), "blender-exe"), help="Path to blender.exe."
+    ),
+    reload_blender: Optional[bool] = typer.Option(
+        default=parse_toml(get_toml(), "reload-blender"), help="Restart Blender and enable addons."
+    ),
+) -> None:
+    """
+    Create symlinks to the addon source in the addon installation directory..
+    """
+
+    def renderable(addons_src, addons_install_dir, excluded_addon_names, blender_exe_path, load_blender):
+        src_string = f"Addon Sources Directory = {addons_src}"
+        addons_install_string = f"Addon Install Directory = {addons_install_dir}"
+        excluded_addons_string = f"Excluded Addons = {excluded_addon_names}"
+        blender_exe_string = f"Blender Executable = {blender_exe_path}"
+        reload_blender_string = f"Reload Blender = {load_blender}"
+
+        return "\n".join(
+            [src_string, addons_install_string, excluded_addons_string, blender_exe_string, reload_blender_string]
+        )
+
+    print(
+        Panel.fit(
+            renderable(src_dir, blender_addons_dir, excluded_addons, blender_exe, reload_blender),
+            title="[orange3]Symlinker Settings[/orange3]",
+            border_style="yellow",
+        )
+    )
+
+    directory_params = {"src_dir": src_dir, "blender_addons_dir": blender_addons_dir}
+
+    check_directories(directory_params)
+
+    symlink_tool = SymlinkToAddonSource(Path(blender_addons_dir))
+
+    addon_srcs = common.get_addon_srcs(Path(src_dir), excluded_addons)
+
+    for addon in track(addon_srcs, description="Removing existing files..."):
+        common.clear_old_addon(Path(blender_addons_dir), addon.name)
+
+    for addon in track(addon_srcs, description="Creating symlinks..."):
+        try:
+            symlink_tool.create_sympath(addon)
+        except PermissionError:
+            print("[red]User does not have permission to create symlinks.[/red]")
+            typer.Abort()
+
+    if reload_blender:
+        if not blender_exe:
+            print("[red]<reload-blender> option is enabled, <blender-exe> path should also be supplied.[/red]")
+            print("[dark_orange]Done! Blender will not be loaded.[/dark_orange]")
+            return
+        common.load_blender(blender_exe, [path.stem for path in addon_srcs])
+
+    print("[green]Done![/green]")
 
 
 @app.command()
