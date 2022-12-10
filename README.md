@@ -47,7 +47,7 @@ Creates symlinks to the addon source in the specified Blender addons installatio
 ## Packing Tool
 
 ```sh
-bpy pack <src_dir> <blender_addons_dir>
+bpy pack <src_dir> <release_dir>
 ```
 Packs addons into ZIP files and automatically names them based on data extracted from the addon bl_info dictionary.<br>
 Example resulting name: `My Addon (v1.0.0).zip`
