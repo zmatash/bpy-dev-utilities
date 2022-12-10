@@ -1,4 +1,4 @@
-"""Testing common shared functions."""
+"""Testing the common shared functions."""
 
 from collections import Counter
 from pathlib import Path

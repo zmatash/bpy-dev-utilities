@@ -5,7 +5,7 @@ import tomli
 import typer
 from rich import print
 from rich.panel import Panel
-from rich.progress import track
+from rich.progress import Progress, SpinnerColumn, TextColumn, track
 
 from bpydevutil.functions import common
 from bpydevutil.functions.install import InstallAddonsFromSource
@@ -13,8 +13,6 @@ from bpydevutil.functions.pack import PackAddonsFromSource
 from bpydevutil.functions.symlink import SymlinkToAddonSource
 
 app = typer.Typer()
-
-
 def check_directories(directory_params: dict[str, str]) -> None:
     """Check given directory arguments exist and are valid.
 
@@ -66,7 +64,7 @@ def symlink(
     ),
 ) -> None:
     """
-    Create symlinks to the addon source in the addon installation directory..
+    Create symlinks to the addon source in the addon installation directory.
     """
 
     def renderable(addons_src, addons_install_dir, excluded_addon_names, blender_exe_path, load_blender):
@@ -199,7 +197,7 @@ def pack(
     ),
 ):
     """
-    Pack addons sources into ZIP files, autogenerating the name from extracted bl_info data.
+    Pack addons sources into ZIP files, auto generating the name from extracted bl_info data.
     """
 
     def renderable(addons_src, excluded_addon_names):
@@ -221,13 +219,15 @@ def pack(
     check_directories(directory_params)
 
     packing_tool = PackAddonsFromSource(Path(release_dir))
-    addon_srcs = common.get_addon_srcs(addons_src, excluded_addons)
+    addon_srcs = common.get_addon_srcs(Path(src_dir), excluded_addons)
 
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as progress:
         progress.add_task(description=f"Writing to archive...")
         for addon in addon_srcs:
             bl_info = packing_tool.get_addon_data(addon)
             name = packing_tool.generate_zip_name(bl_info)
+
+            progress.add_task(description=f"Garbage cleaning...")
             common.clear_unused_files(addon, remove_suffixes)
             packing_tool.pack_addon(addon, name, Path(src_dir))
 

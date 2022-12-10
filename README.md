@@ -53,7 +53,7 @@ Packs addons into ZIP files and automatically names them based on data extracted
 Example resulting name: `My Addon (v1.0.0).zip`
 #### Arguments:
 - src_dir: Directory where addon sources are located. eg ```MyProject\src```
-- release_dir: Directory where archive should be built. eg ```MyProject\releases```
+- release_dir: Directory where the archive should be built. eg ```MyProject\releases```
 
 #### Options:
 - --excluded-addons: Addon names to be excluded from packing. eg ```Addon1, Addon2```
