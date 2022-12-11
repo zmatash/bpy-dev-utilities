@@ -5,8 +5,8 @@ from bpydevutil.functions import common
 def test_clear_unused_files(temp_projects_dir):
     root_dir, _, packages = temp_projects_dir
 
-    arbitrary_package1 = root_dir / list(packages.keys())[0]
-    arbitrary_package2 = root_dir / list(packages.keys())[1]
+    arbitrary_package1 = root_dir / "src" / list(packages.keys())[0]
+    arbitrary_package2 = root_dir / "src" /  list(packages.keys())[1]
 
     assert len(list(arbitrary_package1.rglob("*.pyc"))) != 0
     common.clear_unused_files(arbitrary_package1)
