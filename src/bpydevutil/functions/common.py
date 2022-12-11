@@ -39,10 +39,11 @@ def clear_old_addon(addon_dir: Path, name: str) -> None:
         name: Name of the addon to search for.
     """
 
-    addon_path = Path(addon_dir / name)
+    addon_path = addon_dir / name
 
     if not addon_path.exists():
-        return
+        if Path(addon_path).with_suffix(".py").exists():
+            addon_path  = addon_path.with_suffix(".py")
 
     if addon_path.is_dir():
         if addon_path.is_symlink():
