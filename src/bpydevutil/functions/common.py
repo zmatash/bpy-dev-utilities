@@ -27,25 +27,22 @@ def load_blender(blender_exe: str, addons: list[str] = None) -> bytes:
 
         if addons:
             for addon in addons:
-                enable_addon = f"bpy.ops.preferences.addon_enable(module='{addon}')"
-                expression = f"{expression}{enable_addon}"
+                expression += f"bpy.ops.preferences.addon_enable(module='{addon}'); "
 
         return expression
 
-    cmd = f"{blender_exe} --python-expr '{build_expression()}'"
+    cmd = f"{blender_exe} --background --python-expr '{build_expression()}'"
     blender = subprocess.Popen(cmd)
     blender = blender.communicate()
 
     return blender[0]
 
-
 def clear_old_addon(addon_dir: Path, name: str) -> None:
-    """
+    """Clear old files from the addon directory.
 
     Args:
         addon_dir: Path to the directory to search for the old addon
         name: Name of the addon to search for.
-
     """
 
     addon_path = Path(addon_dir / name)
@@ -63,7 +60,10 @@ def clear_old_addon(addon_dir: Path, name: str) -> None:
 
 
 def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> None:
-    """Garbage cleaning source files. eg .pyc files.
+    """
+    Garbage cleaning source files.
+    Removes the __pycache__ folder
+    and any other user configured file types.
 
     Args:
         addon: Addon path to garbage clean.
