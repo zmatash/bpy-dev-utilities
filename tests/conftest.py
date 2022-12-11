@@ -77,10 +77,10 @@ def temp_projects_dir(tmp_path_factory) -> tuple[Path, dict[str, bool], dict[str
     packages_dict = {"valid_package": True, "valid_package_2": True, "invalid_package": False}
 
     for k, v in modules_dict.items():
-        example_module(root_dir, k, v)
+        example_module(root_dir / "src", k, v)
 
     for k, v in packages_dict.items():
-        example_package(root_dir, k, v)
+        example_package(root_dir / "src", k, v)
 
     return root_dir, modules_dict, packages_dict
 
