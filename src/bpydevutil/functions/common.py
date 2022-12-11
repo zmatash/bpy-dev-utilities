@@ -15,6 +15,7 @@ def load_blender(blender_exe: str, addons: list[str] = None) -> None:
         blender_exe: Path to blender.exe.
         addons: List of blender addon module names.
     """
+
     def build_expression():
         """Build the expression needed to enable all addons from the command line."""
 
@@ -43,7 +44,7 @@ def clear_old_addon(addon_dir: Path, name: str) -> None:
 
     if not addon_path.exists():
         if Path(addon_path).with_suffix(".py").exists():
-            addon_path  = addon_path.with_suffix(".py")
+            addon_path = addon_path.with_suffix(".py")
 
     if addon_path.is_dir():
         if addon_path.is_symlink():
@@ -62,7 +63,7 @@ def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> None:
 
     Args:
         addon: Addon path to garbage clean.
-        rm_suffixes: Delete files using these suffixes.
+        rm_suffixes: suffixes to search for (include '.').
     """
     if rm_suffixes is None:
         rm_suffixes = {".pyc"}
@@ -88,7 +89,6 @@ def get_addon_srcs(addons_src: Path, excluded_addons: Optional[list[str]] = None
 
     Returns:
         The paths of the addons to be installed.
-
     """
 
     def is_python(path: Path) -> bool:
@@ -99,7 +99,6 @@ def get_addon_srcs(addons_src: Path, excluded_addons: Optional[list[str]] = None
 
         Returns:
             True if "path" is a python module or package.
-
         """
         if path.is_dir() and Path(path / "__init__.py").exists():
             if "bl_info" in Path(path / "__init__.py").read_text():

@@ -1,3 +1,5 @@
+"""Command line functionality."""
+
 from pathlib import Path
 from typing import Any, Optional
 
@@ -13,6 +15,8 @@ from bpydevutil.functions.pack import PackAddonsFromSource
 from bpydevutil.functions.symlink import SymlinkToAddonSource
 
 app = typer.Typer()
+
+
 def check_directories(directory_params: dict[str, str]) -> None:
     """Check given directory arguments exist and are valid.
 
@@ -29,6 +33,15 @@ def check_directories(directory_params: dict[str, str]) -> None:
 
 
 def parse_toml(toml: Path, param_key: str) -> Any:
+    """Get value from toml file using a key.
+
+    Args:
+        toml: Path to the toml file.
+        param_key: The key to the parameter value.
+
+    Returns:
+        Parameter value.
+    """
     with open(toml, "rb") as f:
         toml_dict = tomli.load(f)
         try:
@@ -38,6 +51,11 @@ def parse_toml(toml: Path, param_key: str) -> Any:
 
 
 def get_toml():
+    """Search for the project toml file.
+
+    Returns:
+        Path to the toml file if it exists, None if not.
+    """
     pyproject = Path.cwd() / "pyproject.toml"
     if pyproject.exists():
         return pyproject
@@ -105,11 +123,13 @@ def symlink(
             typer.Abort()
 
     if reload_blender:
+        common.load_blender(blender_exe, [path.stem for path in addon_srcs])
+
         if not blender_exe:
             print("[red]<reload-blender> option is enabled, <blender-exe> path should also be supplied.[/red]")
             print("[dark_orange]Done! Blender will not be loaded.[/dark_orange]")
             return
-        common.load_blender(blender_exe, [path.stem for path in addon_srcs])
+
 
     print("[green]Done![/green]")
 
