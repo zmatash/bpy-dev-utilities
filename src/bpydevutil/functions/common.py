@@ -8,18 +8,13 @@ import typer
 from rich import print
 
 
-def load_blender(blender_exe: str, addons: list[str] = None) -> bytes:
+def load_blender(blender_exe: str, addons: list[str] = None) -> None:
     """Load Blender and automatically enable addons.
 
     Args:
         blender_exe: Path to blender.exe.
         addons: List of blender addon module names.
-
-    Returns:
-        The output of the blender subprocess.
-
     """
-
     def build_expression():
         """Build the expression needed to enable all addons from the command line."""
 
@@ -33,9 +28,8 @@ def load_blender(blender_exe: str, addons: list[str] = None) -> bytes:
 
     cmd = f"{blender_exe} --background --python-expr '{build_expression()}'"
     blender = subprocess.Popen(cmd)
-    blender = blender.communicate()
+    blender.communicate()
 
-    return blender[0]
 
 def clear_old_addon(addon_dir: Path, name: str) -> None:
     """Clear old files from the addon directory.
