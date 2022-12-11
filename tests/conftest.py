@@ -1,29 +1,56 @@
+"""Pytest resources."""
+
 from pathlib import Path
 
 import pytest
 
 
-def create_fake_module(root_path: Path, module_name: str, write: bool, extension: str = ".py") -> None:
-    module = Path(root_path / f"{module_name}{extension}")
+def example_module(root_path: Path, module_name: str, write: bool, extension: str = ".py") -> Path:
+    """Create example python module to run tests on.
+
+    Args:
+        root_path: Path to create the module.
+        module_name: Name of the module.
+        write: Write information to module or leave blank.
+        extension: File extension.
+
+    Returns:
+        Path to the module.
+    """
+    module = Path(root_path) / f"{module_name}{extension}"
+    module.touch()
 
     if write:
-        module.write_text('bl_info = {"name": "Fake Addon File", "version": (0, 5, 0), "blender": (2, 93, 0)}')
+        module.write_text(f'bl_info = {{"name": "{module.name}", "version": (0, 5, 0), "blender": (2, 93, 0)}}')
     else:
         module.touch()
 
+    return module
 
-def create_fake_package(root_path: Path, package_name: str, write: bool) -> Path:
 
+def example_package(root_path: Path, package_name: str, write: bool) -> Path:
+    """Create example python package to run tests on.
+
+    Args:
+        root_path: Path to create the package.
+        package_name: Name of the package.
+        write: Write information to init file or leave blank.
+
+    Returns:
+        Path to the package.
+    """
     package = Path(root_path / package_name)
     package.mkdir()
 
-    init = Path(package / "__init__.py")
-
-    sub_folder = Path(package / "sub_folder")
+    init = package / "__init__.py"
+    sub_folder = package / "sub_folder"
     sub_folder.mkdir()
 
+    for file_type in (".py", ".txt", ".tmp", ".pyc"):
+        Path(sub_folder / f"dummy_file{file_type}").touch()
+
     if write:
-        init.write_text('bl_info = {"name": "Fake Addon", "version": (0, 2, 5), "blender": (2, 93, 0)}')
+        init.write_text(f'bl_info = {{"name": "{package.name}", "version": (0, 2, 5), "blender": (2, 93, 0)}}')
     else:
         init.touch()
 
@@ -31,51 +58,52 @@ def create_fake_package(root_path: Path, package_name: str, write: bool) -> Path
 
 
 @pytest.fixture(scope="session")
-def fake_addon_install_env(tmp_path_factory) -> Path:
-    addons_dir = tmp_path_factory.mktemp("addons_dir")
-    create_fake_module(addons_dir, "example_addon", False)
-    create_fake_module(addons_dir, "fake_addon_module", True)
-    create_fake_package(addons_dir, "fake_addon_package", True)
-
-    return addons_dir
-
-
-@pytest.fixture(scope="session")
-def fake_addon_dev_env(tmp_path_factory) -> tuple[Path, Path]:
-    root = tmp_path_factory.mktemp("project_root")
-    src_dir = root / "src"
-    src_dir.mkdir()
-
-    create_fake_module(src_dir, "fake_addon_module", True)
-
-    path = create_fake_package(src_dir, "fake_addon_package", True)
-    create_fake_package(path, "__pycache__", False)
-    create_fake_module(path, "dummy_file", False, ".dummy")
-
-    create_fake_package(src_dir, "fake_addon_package_no_write", False)
-
-    return root, src_dir
-
-
-def config_strings():
-    """Formatting the strings to write the test ini file.
+def temp_projects_dir(tmp_path_factory) -> tuple[Path, dict[str, bool], dict[str, bool]]:
+    """Create temporary mock project folder structure.
 
     Returns:
-        Formatting string to write to the config file.
-
+        The root path of the project directory.
+        The dictionaries used to populate it.
     """
 
-    header = "[tool.bpydevutil]"
-    src_dir = f'src_dir = "ExamplePath"'
-    excluded_addons = f'excluded-addons = ["addon1", "addon2", "addon3"]'
+    root_dir = tmp_path_factory.mktemp("test-projects")
+    src_dir = root_dir / "src"
+    src_dir.mkdir()
 
-    return f"{header}\n{src_dir}\n{excluded_addons}"
+    output_dir = root_dir / "output"
+    output_dir.mkdir()
+
+    modules_dict = {"valid_module": True, "valid_module_2": True, "invalid_module": False}
+    packages_dict = {"valid_package": True, "valid_package_2": True, "invalid_package": False}
+
+    for k, v in modules_dict.items():
+        example_module(root_dir, k, v)
+
+    for k, v in packages_dict.items():
+        example_package(root_dir, k, v)
+
+    return root_dir, modules_dict, packages_dict
 
 
 @pytest.fixture(scope="session")
-def example_config(tmp_path_factory):
-    config_dir = tmp_path_factory.mktemp("test_config_root")
-    config = Path(config_dir / "pryproject.toml")
-    config.write_text(config_strings())
+def temp_addons_dir(tmp_path_factory) -> tuple[Path, dict[str, bool], dict[str, bool]]:
+    """Create temporary mock installation folder structure.
 
-    return config_dir, config
+    Returns:
+        The root path of the installation directory.
+        The dictionaries used to populate it.
+    """
+
+    root_dir = tmp_path_factory.mktemp("install-location")
+    root_dir.mkdir(exist_ok=True)
+
+    modules_dict = {"existing_module": True}
+    packages_dict = {"existing_package": True}
+
+    for k, v in modules_dict.items():
+        example_module(root_dir, k, v)
+
+    for k, v in packages_dict.items():
+        example_package(root_dir, k, v)
+
+    return root_dir, modules_dict, packages_dict
