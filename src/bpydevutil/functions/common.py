@@ -2,8 +2,9 @@
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional, Union
 
+import tomli
 import typer
 from rich import print
 
@@ -92,7 +93,9 @@ def get_addon_srcs(addons_src: Path, excluded_addons: Optional[list[str]] = None
     """
 
     def is_python(path: Path) -> bool:
-        """Check the given path is either a python module or package.
+        """
+        Check the given path is either a python module or package.
+        Check that it contains bl_info.
 
         Args:
             path: The path to check.
@@ -120,3 +123,52 @@ def get_addon_srcs(addons_src: Path, excluded_addons: Optional[list[str]] = None
         raise typer.Abort()
 
     return addon_srcs
+
+
+def check_directories(directory_params: dict[str, str]) -> bool:
+    """Check that user specified directories exist.
+
+    Args:
+        directory_params: Dictionary of parameters and corresponding values.
+
+    Returns
+        True if all tests are passed.
+    """
+    for param in directory_params.keys():
+        if not directory_params[param]:
+            raise typer.BadParameter(f"<{param}> cannot be empty.")
+
+        if not Path(directory_params[param]).is_dir():
+            raise typer.BadParameter(f"<{param}> <{directory_params[param]}> is not an existing directory.")
+
+    return True
+
+
+def parse_toml(toml_path: Path, param_key: str) -> Any:
+    """Get value from toml file using a key.
+
+    Args:
+        toml_path: Path to the toml file.
+        param_key: The key to the parameter value.
+
+    Returns:
+        Parameter value or none if key does not exist.
+    """
+    with open(toml_path, "rb") as f:
+        toml_dict = tomli.load(f)
+        try:
+            return toml_dict["tool"]["bpydevutil"][param_key]
+        except KeyError:
+            return None
+
+def get_toml() -> Union[Path, None]:
+    """Search for the project toml file in the working directory.
+
+    Returns:
+        Path to the toml file if it exists, None if not.
+    """
+    pyproject = Path.cwd() / "pyproject.toml"
+    if pyproject.exists():
+        return pyproject
+    else:
+        return None
