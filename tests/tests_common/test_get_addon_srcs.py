@@ -2,22 +2,21 @@
 
 from bpydevutil.functions import common
 
+
 def test_get_addon_srcs(temp_projects_dir):
     root_dir, modules, packages = temp_projects_dir
 
-    arbitrary_package1 = root_dir / list(packages.keys())[0]
-    arbitrary_package2 = root_dir / list(packages.keys())[1]
+    addon_paths = common.get_addon_srcs(root_dir / "src")
+    addon_names = [path.stem for path in addon_paths]
 
-    assert len(list(arbitrary_package1.rglob("*.pyc"))) != 0
-    common.clear_unused_files(arbitrary_package1)
-    assert len(list(arbitrary_package1.rglob("*.pyc"))) == 0
+    for module, is_valid in modules.items():
+        if is_valid:
+            assert module in addon_names
+        else:
+            assert module not in addon_names
 
-    waste_files = list(arbitrary_package2.rglob("*.txt"))
-    waste_files.extend(list(arbitrary_package2.rglob("*.tmp")))
-
-    assert len(waste_files) != 0
-    common.clear_unused_files(arbitrary_package2, {".txt", ".tmp"})
-
-    waste_files = list(arbitrary_package2.rglob("*.txt"))
-    waste_files.extend(list(arbitrary_package2.rglob("*.tmp")))
-    assert len(waste_files) == 0
+    for package, is_valid in packages.items():
+        if is_valid:
+            assert package in addon_names
+        else:
+            assert package not in addon_names

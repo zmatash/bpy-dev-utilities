@@ -97,6 +97,9 @@ def temp_addons_dir(tmp_path_factory) -> tuple[Path, dict[str, bool], dict[str, 
     root_dir = tmp_path_factory.mktemp("install-location")
     root_dir.mkdir(exist_ok=True)
 
+    symlinks = root_dir / "symlinks"
+    symlinks.mkdir()
+
     modules_dict = {"existing_module": True}
     packages_dict = {"existing_package": True}
 
