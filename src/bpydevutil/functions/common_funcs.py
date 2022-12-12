@@ -28,7 +28,7 @@ def load_blender(blender_exe: str, addons: list[str] = None) -> None:
 
         return expression
 
-    cmd = f"{blender_exe} --background --python-expr '{build_expression()}'"
+    cmd = f'{blender_exe} --background --python-expr "{build_expression()}"'
     blender = subprocess.Popen(cmd)
     blender.communicate()
 
@@ -56,7 +56,7 @@ def clear_old_addon(addon_dir: Path, name: str) -> None:
         addon_path.unlink()
 
 
-def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> None:
+def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> int:
     """
     Garbage cleaning source files.
     Removes the __pycache__ folder
@@ -65,6 +65,9 @@ def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> None:
     Args:
         addon: Addon path to garbage clean.
         rm_suffixes: suffixes to search for (include '.').
+
+    Returns
+        Number of files deleted.
     """
     if rm_suffixes is None:
         rm_suffixes = {".pyc"}
@@ -78,7 +81,7 @@ def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> None:
             path.unlink()
             file_count += 1
 
-    print(f"[green]Garbage Cleaning:[/green] {file_count} files removed.")
+    return file_count
 
 
 def get_addon_srcs(addons_src: Path, excluded_addons: Optional[list[str]] = None) -> list[Path]:
@@ -160,6 +163,7 @@ def parse_toml(toml_path: Path, param_key: str) -> Any:
             return toml_dict["tool"]["bpydevutil"][param_key]
         except KeyError:
             return None
+
 
 def get_toml() -> Union[Path, None]:
     """Search for the project toml file in the working directory.

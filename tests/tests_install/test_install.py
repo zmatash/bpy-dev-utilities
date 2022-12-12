@@ -2,7 +2,7 @@
 
 import pytest
 
-from bpydevutil.functions import install
+from bpydevutil.functions import install_funcs
 
 
 class TestInstallAddonsFromSource:
@@ -13,7 +13,7 @@ class TestInstallAddonsFromSource:
         """Class fixture."""
 
         addons_dir, _, _ = temp_addons_dir
-        return install.InstallAddonsFromSource(addons_dir), addons_dir
+        return install_funcs.InstallAddonsFromSource(addons_dir), addons_dir
 
     def test_install_addon(self, _setup, temp_projects_dir):
         instance, addons_dir = _setup

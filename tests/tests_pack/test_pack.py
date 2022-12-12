@@ -6,7 +6,7 @@ from zipfile import ZipFile
 import pytest
 import typer
 
-from bpydevutil.functions import pack
+from bpydevutil.functions import pack_funcs
 
 
 class TestPackAddons:
@@ -20,7 +20,7 @@ class TestPackAddons:
         src_dir = root_dir / "src"
         output_dir = root_dir / "output"
 
-        return pack.PackAddonsFromSource(output_dir), output_dir, src_dir, modules, packages
+        return pack_funcs.PackAddonsFromSource(output_dir), output_dir, src_dir, modules, packages
 
     def test_get_addon_data(self, _setup):
         instance, _, src_dir, _, _ = _setup

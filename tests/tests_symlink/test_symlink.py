@@ -2,7 +2,7 @@
 
 import pytest
 
-from bpydevutil.functions import symlink
+from bpydevutil.functions import symlink_funcs
 
 
 class TestSymlinkToAddonSource:
@@ -14,7 +14,7 @@ class TestSymlinkToAddonSource:
 
         addons_dir, _, _ = temp_addons_dir
         symlinks_dir = addons_dir / "symlinks"
-        return symlink.SymlinkToAddonSource(symlinks_dir), symlinks_dir
+        return symlink_funcs.SymlinkToAddonSource(symlinks_dir), symlinks_dir
 
     def test_create_symlink(self, _setup, temp_projects_dir):
         instance, symlinks_dir = _setup

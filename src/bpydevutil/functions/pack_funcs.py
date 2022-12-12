@@ -19,7 +19,6 @@ class PackAddonsFromSource:
 
         self.release_dir = release_dir
 
-
     @staticmethod
     def get_addon_data(addon_path: Path) -> Union[dict[str, Any], None]:
         """Extract the bl_info from the addon.
@@ -92,7 +91,7 @@ class PackAddonsFromSource:
         """Pack the addon source into a ZIP file ready for distribution.
 
         Args:
-            addon_path: The path of the addon to pack.
+            addon_path: The path of the addon to pack_funcs.
             name: The name of the resulting ZIP file.
             addons_src: The path of the root directory where addon sources are located.
         """
@@ -101,8 +100,6 @@ class PackAddonsFromSource:
             name = f"{name}.zip"
 
         zip_path = self.release_dir / name
-        if zip_path.exists():
-            typer.confirm("This file already exists. Do you want to overwrite it?", default=True, abort=True)
 
         with ZipFile(zip_path, "w", ZIP_DEFLATED) as zip_file:
             if addon_path.is_dir():
