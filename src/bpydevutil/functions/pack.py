@@ -1,10 +1,7 @@
 """Pack addon into a ZIP file and automatically generate file information in the title."""
 import ast
-import importlib
-import re
-import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import typer
@@ -16,41 +13,52 @@ class PackAddonsFromSource:
 
     def __init__(self, release_dir: Path) -> None:
         """
-
         Args:
             release_dir: Directory where addon should be moved after it is packed.
-
         """
 
         self.release_dir = release_dir
 
     @staticmethod
-    def get_addon_data(addon: Path) -> dict[str, Any]:
+    def get_addon_data(addon: Path) -> Union[dict[str, Any], None]:
         """Extract the bl_info from the addon.
 
         Args:
             addon: Path of the addon to process.
 
         Returns:
-            bl_info dictionary.
+            bl_info dictionary (keys=name, version, blender).
         """
-
-        sys.path.append(str(addon.parent))
-        try:
-            imported_module = importlib.import_module(addon.stem)
-            return imported_module.bl_info
-        except ModuleNotFoundError:
-            pass
 
         if addon.is_file():
             init = Path(addon)
         else:
             init = Path(addon / "__init__.py")
-
         text = init.read_text()
-        bl_info = re.search(r"((?<=bl_info\s=\s)|(?<=bl_info=))(\s|){[\s\S]*?}", text)
 
-        return ast.literal_eval(bl_info[0])
+        mod = ast.parse(text)
+
+        bl_info = {}
+        nodes = []
+        current_node = -1
+
+        for node in ast.walk(mod):
+            current_node += 1
+            nodes.append(node)
+            if isinstance(node, ast.Dict):
+                previous_node = nodes[current_node - 1]
+                if isinstance(previous_node, ast.Name) and previous_node.id == "bl_info":
+                    pass
+                else:
+                    continue
+
+                for key, value in zip(node.keys, node.values):
+                    new_key = eval(compile(ast.Expression(key), "<ast expression>", "eval"))
+                    new_value = eval(compile(ast.Expression(value), "<ast expression>", "eval"))
+                    bl_info[new_key] = new_value
+
+                return bl_info
+        return None
 
     @staticmethod
     def generate_zip_name(bl_info: dict[str, Any]) -> str:
@@ -63,7 +71,7 @@ class PackAddonsFromSource:
             The final addon package name.
         """
 
-        data_keys = ["name", "version", "blender"]
+        data_keys = ["name", "version"]
         for k in data_keys:
             if k not in bl_info.keys():
                 print(
