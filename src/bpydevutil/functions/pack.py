@@ -19,6 +19,7 @@ class PackAddonsFromSource:
 
         self.release_dir = release_dir
 
+
     @staticmethod
     def get_addon_data(addon_path: Path) -> Union[dict[str, Any], None]:
         """Extract the bl_info from the addon.
@@ -53,7 +54,9 @@ class PackAddonsFromSource:
                     continue
 
                 for key, value in zip(node.keys, node.values):
+                    # noinspection PyTypeChecker
                     new_key = eval(compile(ast.Expression(key), "<ast expression>", "eval"))
+                    # noinspection PyTypeChecker
                     new_value = eval(compile(ast.Expression(value), "<ast expression>", "eval"))
                     bl_info[new_key] = new_value
 
