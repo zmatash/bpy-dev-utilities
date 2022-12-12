@@ -63,7 +63,8 @@ def temp_projects_dir(tmp_path_factory) -> tuple[Path, dict[str, bool], dict[str
 
     Returns:
         The root path of the project directory.
-        The dictionaries used to populate it.
+        The module dictionary.
+        The package dictionary.
     """
 
     root_dir = tmp_path_factory.mktemp("test-projects")
@@ -72,6 +73,14 @@ def temp_projects_dir(tmp_path_factory) -> tuple[Path, dict[str, bool], dict[str
 
     output_dir = root_dir / "output"
     output_dir.mkdir()
+
+    toml_file = root_dir / "pyproject.toml"
+    toml_file.touch()
+
+    replace_seps = str(root_dir).replace("\\", "\\\\")
+    with open(toml_file, "w") as f:
+        f.write("[tool.bpydevutil]\n")
+        f.write(f'root-dir = "{replace_seps}"')
 
     modules_dict = {"valid_module": True, "valid_module_2": True, "invalid_module": False}
     packages_dict = {"valid_package": True, "valid_package_2": True, "invalid_package": False}
