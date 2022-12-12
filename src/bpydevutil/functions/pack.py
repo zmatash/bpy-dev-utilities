@@ -20,20 +20,20 @@ class PackAddonsFromSource:
         self.release_dir = release_dir
 
     @staticmethod
-    def get_addon_data(addon: Path) -> Union[dict[str, Any], None]:
+    def get_addon_data(addon_path: Path) -> Union[dict[str, Any], None]:
         """Extract the bl_info from the addon.
 
         Args:
-            addon: Path of the addon to process.
+            addon_path: Path of the addon to process.
 
         Returns:
-            bl_info dictionary (keys=name, version, blender).
+            bl_info dictionary (keys=name, version).
         """
 
-        if addon.is_file():
-            init = Path(addon)
+        if addon_path.is_file():
+            init = Path(addon_path)
         else:
-            init = Path(addon / "__init__.py")
+            init = Path(addon_path / "__init__.py")
         text = init.read_text()
 
         mod = ast.parse(text)
@@ -68,7 +68,7 @@ class PackAddonsFromSource:
             bl_info: bl_info dictionary extracted from the addon.
 
         Returns:
-            The final addon package name.
+            An auto generated name based on the supplied information.
         """
 
         data_keys = ["name", "version"]
@@ -85,26 +85,25 @@ class PackAddonsFromSource:
 
         return zip_name
 
-    def pack_addon(self, addon: Path, name: str, addons_src: Path) -> None:
+    def pack_addon(self, addon_path: Path, name: str, addons_src: Path) -> None:
         """Pack the addon source into a ZIP file ready for distribution.
 
         Args:
-            addon: The path of the addon to pack.
+            addon_path: The path of the addon to pack.
             name: The name of the resulting ZIP file.
             addons_src: The path of the root directory where addon sources are located.
-
         """
 
         if not name.endswith(".zip"):
             name = f"{name}.zip"
 
-        zip_path = Path(self.release_dir / name)
+        zip_path = self.release_dir / name
         if zip_path.exists():
             typer.confirm("This file already exists. Do you want to overwrite it?", default=True, abort=True)
 
         with ZipFile(zip_path, "w", ZIP_DEFLATED) as zip_file:
-            if addon.is_dir():
-                for entry in addon.rglob("*"):
+            if addon_path.is_dir():
+                for entry in addon_path.rglob("*"):
                     zip_file.write(Path(entry), entry.relative_to(addons_src))
             else:
-                zip_file.write(Path(addon), addon.relative_to(addons_src))
+                zip_file.write(Path(addon_path), addon_path.relative_to(addons_src))

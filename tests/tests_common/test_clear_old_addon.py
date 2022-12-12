@@ -1,4 +1,5 @@
 """Test clearing of old addon files."""
+
 from pathlib import Path
 
 from bpydevutil.functions import common
