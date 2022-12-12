@@ -14,7 +14,7 @@ poetry add bpy-dev-utils
 
 ## Install Tool
 ```sh
-bpy install <src_dir> <blender_addons_dir>
+bpy install <src-dir> <blender-addons-dir>
 ```
 Installs addons directly from their source files into the specified Blender addons installation directory.
 #### Arguments:
@@ -30,7 +30,7 @@ Installs addons directly from their source files into the specified Blender addo
 
 ## Symlink Tool
 ```sh
-bpy symlink <src_dir> <blender_addons_dir>
+bpy symlink <src-dir> <blender-addons-dir>
 ```
 Creates symlinks to the addon source in the specified Blender addons installation directory. Requires either symlink creation privileges, either through running as admin or security policy.
 #### Arguments:
@@ -47,7 +47,7 @@ Creates symlinks to the addon source in the specified Blender addons installatio
 ## Packing Tool
 
 ```sh
-bpy pack <src_dir> <release_dir>
+bpy pack <src-dir> <release-dir>
 ```
 Packs addons into ZIP files and automatically names them based on data extracted from the addon bl_info dictionary.<br>
 Example resulting name: `My Addon (v1.0.0).zip`
