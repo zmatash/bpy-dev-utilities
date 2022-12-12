@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bpy-dev-utils"
-version = "1.0.0"
+version = "0.1.0"
 description = "This is a personal collection of simple CLI utilities that I made to help my development of Blender addons."
 authors = ["Matt Ashpole <m.d.ashpole@gmail.com>"]
 readme = "README.md"
