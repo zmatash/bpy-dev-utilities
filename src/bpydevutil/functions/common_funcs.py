@@ -53,7 +53,7 @@ def clear_old_addon(addon_dir: Path, name: str) -> None:
         else:
             shutil.rmtree(addon_path)
     else:
-        addon_path.unlink()
+        addon_path.unlink(missing_ok=True)
 
 
 def clear_unused_files(addon: Path, rm_suffixes: set[str] = None) -> int:
